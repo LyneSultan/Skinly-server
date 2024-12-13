@@ -6,8 +6,7 @@ export class CreateUserDto {
   readonly user_type: String;
   readonly skin_type: String;
   readonly profile_pircture: String;
-  readonly ban: Boolean;
-
+  readonly ban?: boolean ;
 }
 export class LoginDto{
   readonly name: string;

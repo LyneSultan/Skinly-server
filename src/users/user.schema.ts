@@ -19,7 +19,7 @@ export class User extends Document{
   @Prop()
   profile_pircture: String;
 
-  @Prop()
+  @Prop({default: false})
   ban: Boolean;
 }
 

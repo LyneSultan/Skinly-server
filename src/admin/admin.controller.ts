@@ -10,6 +10,10 @@ export class AdminController {
   async getCompanies(): Promise<any>{
     return this.adminService.getCompanies();
   }
+  @Get('getUsers')
+  async getUsers(): Promise<any>{
+    return this.adminService.getUsers();
+  }
 
   @Post('addCompany')
   async addCompany(@Body() addCompanyDto: AddCompanyDto): Promise<any> {

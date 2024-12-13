@@ -8,7 +8,8 @@ import { AddCompanyDto } from './DTO/admin.dto';
 
 @Injectable()
 export class AdminService {
-  constructor(@InjectModel(Company.name) private companyModel: Model<Company>,
+
+    constructor(@InjectModel(Company.name) private companyModel: Model<Company>,
   @InjectModel(User.name) private userModel: Model<User>) { }
 
   async addCompany(addCompanyDto: AddCompanyDto): Promise<any> {
@@ -58,6 +59,19 @@ export class AdminService {
       message: 'Product added to company successfully',
       company: updatedCompany,
     };
+  }
+  async getProductsFromCompany(comapnyId: String):Promise <any>{
+
+    const company = await this.companyModel.findById(comapnyId);
+
+    if (!company) {
+      return { message: "Company not found" }
+    }
+
+    return {
+      message: "Company found",
+      products:company.products,
+    }
   }
 
 }

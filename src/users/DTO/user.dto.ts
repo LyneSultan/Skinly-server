@@ -9,3 +9,7 @@ export class CreateUserDto {
   readonly ban: Boolean;
 
 }
+export class LoginDto{
+  readonly name: string;
+  readonly password: string;
+}

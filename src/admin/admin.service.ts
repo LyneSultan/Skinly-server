@@ -6,7 +6,7 @@ import { AddCompanyDto } from './DTO/admin.dto';
 
 @Injectable()
 export class AdminService {
-  constructor(@InjectModel(Company.name) private companyModel: Model<Company>) {}
+  constructor(@InjectModel(Company.name) private companyModel: Model<Company>) { }
 
   async addCompany(addCompanyDto: AddCompanyDto): Promise<any> {
     const newCompany = new this.companyModel(addCompanyDto);
@@ -16,11 +16,18 @@ export class AdminService {
       company: newCompany,
     };
   }
-  async removeCompany(companyId:String): Promise<any> {
-    const companyToDelete= await this.companyModel.findByIdAndDelete(companyId);
+  async removeCompany(companyId: String): Promise<any> {
+    const companyToDelete = await this.companyModel.findByIdAndDelete(companyId);
 
     return {
       message: 'Company deleted successfully',
     };
+  }
+  async getCompanies(): Promise<any>{
+    const companies = await this.companyModel.find();
+    return {
+      message: 'get all companies',
+      companies:companies
+    }
   }
 }

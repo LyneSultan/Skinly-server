@@ -16,4 +16,11 @@ export class AdminService {
       company: newCompany,
     };
   }
+  async removeCompany(companyId:String): Promise<any> {
+    const companyToDelete= await this.companyModel.findByIdAndDelete(companyId);
+
+    return {
+      message: 'Company deleted successfully',
+    };
+  }
 }

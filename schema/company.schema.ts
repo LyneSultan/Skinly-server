@@ -6,7 +6,7 @@ interface Product {
   price: number;
   rating: number;
   description?: string;
-  additional_info: {
+  additional_info?: {
     advertisement: string;
   };
 }
@@ -19,7 +19,7 @@ export class Company extends Document {
   @Prop()
   scraping_file: string;
 
-  @Prop({ type: Array })
+  @Prop({ type: Array, default:[] })
   products: Product[];
 }
 

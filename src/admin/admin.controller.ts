@@ -15,6 +15,10 @@ export class AdminController {
   async getUsers(): Promise<any>{
     return this.adminService.getUsers();
   }
+  @Get('getProductsCompany/:id')
+  async getProductsCompany(@Param('id') companyId:String): Promise<any>{
+    return this.adminService.getProductsFromCompany(companyId);
+  }
 
   @Post('addCompany')
   async addCompany(@Body() addCompanyDto: AddCompanyDto): Promise<any> {

@@ -23,6 +23,22 @@ export class UsersService {
       return {message:"Invalid credentials"}
 
     return { message: "login successful", user: user };
+  }
+
+  async ban(userId: String): Promise<any>{
+
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      userId,
+      { ban: true },
+      { new: true }
+    );
+    if (!updatedUser)
+      return { mesage: "User not found" }
+
+    return {
+      message: "User is banned",
+      user: updatedUser
+    };
 
   }
 }

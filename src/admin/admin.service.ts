@@ -2,11 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Company } from '../../schema/company.schema';
+import { User } from '../../schema/user.schema';
 import { AddCompanyDto } from './DTO/admin.dto';
 
 @Injectable()
 export class AdminService {
-  constructor(@InjectModel(Company.name) private companyModel: Model<Company>) { }
+  constructor(@InjectModel(Company.name) private companyModel: Model<Company>,
+  @InjectModel(User.name) private userModel: Model<User>) { }
 
   async addCompany(addCompanyDto: AddCompanyDto): Promise<any> {
     const newCompany = new this.companyModel(addCompanyDto);
@@ -28,6 +30,15 @@ export class AdminService {
     return {
       message: 'get all companies',
       companies:companies
+    }
+  }
+  async getUsers(): Promise<any>{
+    const users = await this.userModel.find();
+    if (!users)
+      return {message:"no users"}
+    return {
+      message: "getting users",
+      users:users
     }
   }
 }

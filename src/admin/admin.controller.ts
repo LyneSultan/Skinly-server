@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { AddCompanyDto } from './DTO/admin.dto';
 
@@ -9,5 +9,9 @@ export class AdminController {
   @Post('addCompany')
   async addCompany(@Body() addCompanyDto: AddCompanyDto): Promise<any> {
     return this.adminService.addCompany(addCompanyDto);
+  }
+  @Delete('removeCompany/:id')
+  async removeCompany(@Param('id')companyId:String){
+    return this.adminService.removeCompany(companyId);
   }
 }

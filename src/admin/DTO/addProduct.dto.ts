@@ -7,6 +7,7 @@ export class AddProductDto {
   @IsNumber()
   price: number;
 
+  @IsOptional()
   @IsNumber()
   rating: number;
 

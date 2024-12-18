@@ -1,54 +1,63 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../../schema/user.schema';
-import { CreateUserDto, LoginDto } from './DTO/user.dto';
+import { CreateUserDto } from './DTO/createUser.dto';
+import { LoginDto } from './DTO/userLogin.dto';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const newUser = new this.userModel(createUserDto);
-    return newUser.save();
-  }
-
-  async login(loginDto: LoginDto): Promise<any>  {
-    const user =await this.userModel.findOne({name:loginDto.name})
-    if (!user) {
-      return {message:"Invalid credentials"}
-    }
-
-    if (user.password !== loginDto.password)
-      return {message:"Invalid credentials"}
-
-    return { message: "login successful", user: user };
-  }
-
-  async getUsers(): Promise<any> {
-    const users = await this.userModel.find();
-    if (!users)
-      return { message: "no users" }
-    return {
-      message: "getting users",
-      users: users
+    try {
+      const newUser = new this.userModel(createUserDto);
+      newUser.save();
+      return newUser;
+    } catch (error) {
+      throw new HttpException("Error on register",HttpStatus.BAD_REQUEST)
     }
   }
 
-  async ban(userId: String): Promise<any>{
+  async login(loginDto: LoginDto): Promise<User>  {
+    try {
+      const user = await this.userModel.findOne({ name: loginDto.name })
+      if (!user)
+        throw new HttpException("This name is not found", HttpStatus.NOT_FOUND);
 
-    const updatedUser = await this.userModel.findByIdAndUpdate(
-      userId,
-      { ban: true },
-      { new: true }
-    );
-    if (!updatedUser)
-      return { mesage: "User not found" }
+      if (user.password !== loginDto.password)
+        throw new HttpException("Invalid credentials", HttpStatus.BAD_REQUEST);
 
-    return {
-      message: "User is banned",
-      user: updatedUser
-    };
+      return user;
+    } catch (error) {
+      throw new HttpException("Error in login",HttpStatus.BAD_REQUEST)
+    }
+  }
 
+  async getUsers(): Promise<User[]> {
+    try {
+      const users = await this.userModel.find();
+      return users;
+    } catch (error) {
+      throw new HttpException('Failed to retrieve users', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async ban(userId: String): Promise<User>{
+    try {
+      const updatedUser = await this.userModel.findByIdAndUpdate(
+        userId,
+        { ban: true },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        throw new HttpException('User not found or update failed', HttpStatus.NOT_FOUND);
+      }
+      return updatedUser;
+
+    } catch (error) {
+      throw new HttpException("failed to ban the user",HttpStatus.BAD_REQUEST)
+    }
   }
 }

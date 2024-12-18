@@ -6,9 +6,9 @@ import { CreateUserDto, LoginDto } from './DTO/user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
-  async createUser(createUserDto:CreateUserDto): Promise<User> {
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
     const newUser = new this.userModel(createUserDto);
     return newUser.save();
   }
@@ -23,6 +23,16 @@ export class UsersService {
       return {message:"Invalid credentials"}
 
     return { message: "login successful", user: user };
+  }
+
+  async getUsers(): Promise<any> {
+    const users = await this.userModel.find();
+    if (!users)
+      return { message: "no users" }
+    return {
+      message: "getting users",
+      users: users
+    }
   }
 
   async ban(userId: String): Promise<any>{

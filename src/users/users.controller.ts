@@ -7,6 +7,15 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
+  @Get('/')
+  async getUsers(): Promise<any>{
+    return this.userService.getUsers();
+  }
+  @Get('ban/:id')
+  async banUser(@Param('id') userId: String) {
+    return this.userService.ban(userId);
+  }
+
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.createUser(createUserDto);
@@ -17,8 +26,4 @@ export class UsersController {
     return this.userService.login(loginDto);
   }
 
-  @Get('ban/:id')
-  async banUser(@Param('id') userId: String) {
-    return this.userService.ban(userId);
-  }
 }

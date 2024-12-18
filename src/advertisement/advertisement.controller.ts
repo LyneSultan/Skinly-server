@@ -6,7 +6,7 @@ import { AddAdvertisementDto } from './DTO/AddAdvertisement.dto';
 export class AdvertisementController {
   constructor(private readonly advertsiementService: AdvertisementService) { }
 
-  @Post('addAds/:companyId/:product')
+  @Post('/:companyId/:product')
   async addAds(
     @Param('companyId') companyId: string,
     @Param('product') productName: string,

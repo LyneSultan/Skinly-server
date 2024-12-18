@@ -5,8 +5,9 @@ import { CompanyController } from './company.controller';
 import { CompanyService } from './company.service';
 
 @Module({
-    imports: [MongooseModule.forFeature([
-      { name: Company.name, schema: CompanySchema }])],
+
+  imports: [MongooseModule.forFeature([
+  { name: Company.name, schema: CompanySchema }])],
   controllers: [CompanyController],
   providers: [CompanyService]
 })

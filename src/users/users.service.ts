@@ -12,7 +12,7 @@ export class UsersService {
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     try {
       const newUser = new this.userModel(createUserDto);
-      newUser.save();
+      await newUser.save();
       return newUser;
     } catch (error) {
       throw new HttpException("Error on register",HttpStatus.BAD_REQUEST)
@@ -43,7 +43,7 @@ export class UsersService {
     }
   }
 
-  async ban(userId: String): Promise<User>{
+  async ban(userId: string): Promise<User>{
     try {
       const updatedUser = await this.userModel.findByIdAndUpdate(
         userId,
@@ -61,4 +61,24 @@ export class UsersService {
       throw new HttpException("failed to ban the user",HttpStatus.BAD_REQUEST)
     }
   }
+
+  async unban(userId: string): Promise<User> {
+    try {
+      const updatedUser = await this.userModel.findByIdAndUpdate(
+        userId,
+        { ban: false },
+        { new: true }
+      ).exec();
+
+      if (!updatedUser) {
+        throw new HttpException('User not found or update failed', HttpStatus.NOT_FOUND);
+      }
+
+      return updatedUser;
+    } catch (error) {
+      throw new HttpException(error.message || 'Failed to unban the user', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+
 }

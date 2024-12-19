@@ -11,26 +11,33 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     try {
-      const newUser = new this.userModel(createUserDto);
-      await newUser.save();
-      return newUser;
-    } catch (error) {
-      throw new HttpException("Error on register",HttpStatus.BAD_REQUEST)
-    }
+      const existingEmail = await this.userModel.findOne({
+        'email': createUserDto.email,
+      });
+      if (existingEmail) {
+        throw new HttpException('Email must be unique.', HttpStatus.BAD_REQUEST);
+      }
+        const newUser = new this.userModel(createUserDto);
+        await newUser.save();
+        return newUser;
+      } catch (error) {
+        throw new HttpException('Error on register: ' + error.message, HttpStatus.BAD_REQUEST);
+      }
+
   }
 
   async login(loginDto: LoginDto): Promise<User>  {
     try {
-      const user = await this.userModel.findOne({ name: loginDto.name })
+      const user = await this.userModel.findOne({ email: loginDto.email })
       if (!user)
-        throw new HttpException("This name is not found", HttpStatus.NOT_FOUND);
+        throw new HttpException("This email is not found", HttpStatus.NOT_FOUND);
 
       if (user.password !== loginDto.password)
         throw new HttpException("Invalid credentials", HttpStatus.BAD_REQUEST);
 
       return user;
     } catch (error) {
-      throw new HttpException("Error in login",HttpStatus.BAD_REQUEST)
+      throw new HttpException("Error in login"+ error.message,HttpStatus.BAD_REQUEST)
     }
   }
 
@@ -58,7 +65,7 @@ export class UsersService {
       return updatedUser;
 
     } catch (error) {
-      throw new HttpException("failed to ban the user",HttpStatus.BAD_REQUEST)
+      throw new HttpException("failed to ban the user"+ error.message,HttpStatus.BAD_REQUEST)
     }
   }
 
@@ -85,7 +92,10 @@ export class UsersService {
       const updatedUser = await this.userModel.findByIdAndUpdate(
         userId,
         updateData,
-        { new: true }
+        {
+          new: true,
+          runValidators: true
+        }
       );
 
       if (!updatedUser) {
@@ -97,6 +107,4 @@ export class UsersService {
       throw new HttpException(error.message || 'Failed to update the user', HttpStatus.BAD_REQUEST);
     }
   }
-
-
 }

@@ -80,5 +80,23 @@ export class UsersService {
     }
   }
 
+  async updateUser(userId: string, updateData: Partial<User>): Promise<User> {
+    try {
+      const updatedUser = await this.userModel.findByIdAndUpdate(
+        userId,
+        updateData,
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        throw new HttpException('User not found or update failed', HttpStatus.NOT_FOUND);
+      }
+
+      return updatedUser;
+    } catch (error) {
+      throw new HttpException(error.message || 'Failed to update the user', HttpStatus.BAD_REQUEST);
+    }
+  }
+
 
 }

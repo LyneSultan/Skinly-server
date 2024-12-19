@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Company } from 'schema/company.schema';
+import { Company, Product } from 'schema/company.schema';
 import { AddProductDto } from './DTO/addProduct.dto';
 
 @Injectable()
@@ -9,34 +9,37 @@ export class ProductService {
 
   constructor(@InjectModel(Company.name) private companyModel: Model<Company>) { }
 
-  async addProductToCompany(companyId: String, addProductDto: AddProductDto): Promise<any> {
-    const company = await this.companyModel.findById(companyId);
-    if (!company) {
-      return { message: 'Company not found' };
+  async addProductToCompany(companyId: String, addProductDto: AddProductDto): Promise<Company> {
+    try {
+      const company = await this.companyModel.findById(companyId);
+
+      if (!company) {
+        throw new HttpException("Company not found", HttpStatus.NOT_FOUND);
+      }
+
+      const updatedCompany = await this.companyModel.findByIdAndUpdate(
+        companyId,
+        { $push: { products: addProductDto } },
+        { new: true }
+      );
+
+      return updatedCompany;
+    } catch (error) {
+      throw new HttpException("Error in adding product", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    const updatedCompany = await this.companyModel.findByIdAndUpdate(
-      companyId,
-      { $push: { products: addProductDto } },
-      { new: true }
-    );
-
-    return {
-      message: 'Product added to company successfully',
-      company: updatedCompany,
-    };
   }
-  async getProductsFromCompany(comapnyId: String):Promise <any>{
 
-    const company = await this.companyModel.findById(comapnyId);
+  async getProductsFromCompany(comapnyId: String):Promise <Product[]>{
+    try {
+      const company = await this.companyModel.findById(comapnyId);
 
-    if (!company) {
-      return { message: "Company not found" }
-    }
+      if (!company) {
+        throw new HttpException("Company not found", HttpStatus.NOT_FOUND);
+      }
 
-    return {
-      message: "Company found",
-      products:company.products,
+      return company.products;
+    } catch (error) {
+      throw new HttpException("Error getting products", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

@@ -1,22 +1,9 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
-
-export class AddProductDto {
-  @IsString()
+export type AddProductDto ={
   name: string;
-
-  @IsNumber()
   price: number;
-
-  @IsOptional()
-  @IsNumber()
-  rating: number;
-
-  @IsOptional()
-  @IsString()
+  rating?: number;
   description?: string;
-
-  @IsOptional()
   additional_info: {
-    advertisement: string;
+    advertisement?: string;
   };
 }

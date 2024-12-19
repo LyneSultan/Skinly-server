@@ -2,8 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../../schema/user.schema';
-import { CreateUserDto } from './DTO/createUser.dto';
 import { LoginDto } from './DTO/userLogin.dto';
+import { CreateUserDto } from './DTO/userRegister.dto';
 
 @Injectable()
 export class UsersService {
@@ -54,6 +54,7 @@ export class UsersService {
       if (!updatedUser) {
         throw new HttpException('User not found or update failed', HttpStatus.NOT_FOUND);
       }
+
       return updatedUser;
 
     } catch (error) {

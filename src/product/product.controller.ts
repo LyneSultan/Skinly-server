@@ -7,13 +7,13 @@ export class ProductController {
   constructor(private readonly productService: ProductService) { }
 
   @Get('/:id')
-  async getProductsCompany(@Param('id') companyId:String): Promise<any>{
+  async getProductsCompany(@Param('id') companyId:String){
     return this.productService.getProductsFromCompany(companyId);
   }
 
   @Post('/:id')
   async addProduct(@Param('id') companyId: String,
-    @Body() addProductDto: AddProductDto): Promise<any> {
+    @Body() addProductDto: AddProductDto) {
     return this.productService.addProductToCompany(companyId, addProductDto);
   }
 }

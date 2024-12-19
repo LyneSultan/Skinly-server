@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { User } from '../../schema/user.schema';
-import { CreateUserDto } from './DTO/createUser.dto';
 import { LoginDto } from './DTO/userLogin.dto';
+import { CreateUserDto } from './DTO/userRegister.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -9,7 +8,7 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Get('/')
-  async getUsers(): Promise<any>{
+  async getUsers(){
     return this.userService.getUsers();
   }
   @Get('ban/:id')
@@ -18,7 +17,7 @@ export class UsersController {
   }
 
   @Post('register')
-  async register(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async register(@Body() createUserDto: CreateUserDto){
     return this.userService.createUser(createUserDto);
   }
 

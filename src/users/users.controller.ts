@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { User } from 'schema/user.schema';
 import { LoginDto } from './DTO/userLogin.dto';
 import { CreateUserDto } from './DTO/userRegister.dto';
 import { UsersService } from './users.service';
@@ -18,6 +19,11 @@ export class UsersController {
   @Get('unban/:id')
   async unbanUser(@Param('id') userId: string) {
     return this.userService.unban(userId);
+  }
+
+  @Patch(':id')
+  async updateUser(@Param('id') id: string, @Body() updateData: Partial<User>) {
+    return this.userService.updateUser(id, updateData);
   }
 
   @Post('register')

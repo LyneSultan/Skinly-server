@@ -9,7 +9,7 @@ export class ProductService {
 
   constructor(@InjectModel(Company.name) private companyModel: Model<Company>) { }
 
-  async addProductToCompany(companyId: String, addProductDto: AddProductDto): Promise<Company> {
+  async addProductToCompany(companyId: string, addProductDto: AddProductDto): Promise<Company> {
     try {
       const company = await this.companyModel.findById(companyId);
 
@@ -29,7 +29,7 @@ export class ProductService {
     }
   }
 
-  async getProductsFromCompany(comapnyId: String):Promise <Product[]>{
+  async getProductsFromCompany(comapnyId: string):Promise <Product[]>{
     try {
       const company = await this.companyModel.findById(comapnyId);
 
@@ -42,4 +42,34 @@ export class ProductService {
       throw new HttpException("Error getting products", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  async getCommonProduct(productName: string): Promise<any> {
+    try {
+      const companies = await this.companyModel.find({
+        'products.name': productName,
+      });
+
+      if (!companies || companies.length === 0) {
+        throw new HttpException('No companies found with this product', HttpStatus.NOT_FOUND);
+      }
+
+      const commonProduct: { product: Product, companyName: string }[] = [];
+
+      companies.forEach(company => {
+        const matchingProducts = company.products.filter(
+          product => product.name === productName
+        );
+
+        matchingProducts.forEach(product => {
+          commonProduct.push({ companyName: company.name, product });
+        });
+      });
+
+      return commonProduct;
+
+    } catch (error) {
+      throw new HttpException('Error finding common products', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
 }

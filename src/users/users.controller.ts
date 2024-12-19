@@ -12,8 +12,12 @@ export class UsersController {
     return this.userService.getUsers();
   }
   @Get('ban/:id')
-  async banUser(@Param('id') userId: String) {
+  async banUser(@Param('id') userId: string) {
     return this.userService.ban(userId);
+  }
+  @Get('unban/:id')
+  async unbanUser(@Param('id') userId: string) {
+    return this.userService.unban(userId);
   }
 
   @Post('register')

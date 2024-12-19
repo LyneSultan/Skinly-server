@@ -7,12 +7,12 @@ export class CompanyController {
   constructor(private readonly companyService: CompanyService) { }
 
   @Get('/')
-  async getCompanies(): Promise<any> {
+  async getCompanies(){
     return this.companyService.getCompanies();
   }
 
   @Post('/')
-  async addCompany(@Body() addCompanyDto: AddCompanyDto): Promise<any> {
+  async addCompany(@Body() addCompanyDto: AddCompanyDto) {
     return this.companyService.addCompany(addCompanyDto);
   }
 

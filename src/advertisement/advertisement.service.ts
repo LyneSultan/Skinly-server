@@ -1,45 +1,68 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Company } from 'schema/company.schema';
+import { Company, Product } from 'schema/company.schema';
 import { AddAdvertisementDto } from './DTO/AddAdvertisement.dto';
 
 @Injectable()
 export class AdvertisementService {
-  constructor(@InjectModel(Company.name) private companyModel: Model<Company>) {}
-
+  constructor(@InjectModel(Company.name) private companyModel: Model<Company>) { }
 
   async addAdvertisementToProduct(
     companyId: string,
     productName: string,
-    addAdvertisementDto: AddAdvertisementDto,
-  ): Promise<any> {
-
-    const company = await this.companyModel.findById(companyId);
-
-    if (!company) {
-      return { message: 'Company not found' };
-    }
-
-    const product = company.products.find((p) => p.name === productName);
-
-    if (!product) {
-      return { message: 'Product not found' };
-    }
-    if (!product.additional_info) {
-      product.additional_info = { advertisement: '' };
-    }
-    product.additional_info.advertisement = addAdvertisementDto.advertisement;
-    company.markModified('products');
+    addAdvertisementDto: AddAdvertisementDto): Promise<Product> {
 
     try {
+      const company = await this.companyModel.findById(companyId);
+
+      if (!company) {
+        throw new HttpException("Company not found", HttpStatus.NOT_FOUND);
+      }
+
+      const product = company.products.find((p) => p.name === productName);
+
+      if (!product) {
+        throw new HttpException("Product not found", HttpStatus.NOT_FOUND);
+      }
+      if (!product.additional_info) {
+        product.additional_info = { advertisement: '' };
+      }
+      product.additional_info.advertisement = addAdvertisementDto.advertisement;
+      company.markModified('products');
+
       await company.save();
-      return {
-        message: 'Advertisement added successfully',
-        product,
-      };
+      return product;
+
     } catch (error) {
-      return { message: 'Error saving advertisement', error };
+      throw new HttpException("Error in adding ads", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async getAdvertisementForProduct(
+    companyId: string,
+    productName: string): Promise<Product> {
+    try {
+      const company = await this.companyModel.findById(companyId);
+
+      if (!company) {
+        throw new HttpException("Company not found", HttpStatus.NOT_FOUND);
+      }
+
+      const product = company.products.find((p) => p.name === productName);
+
+      if (!product) {
+        throw new HttpException("Product not found", HttpStatus.NOT_FOUND);
+      }
+
+      if (product.additional_info.advertisement) {
+        return product;
+      } else {
+        throw new HttpException("No ads for this product", HttpStatus.NOT_FOUND);
+      }
+
+    }catch (error) {
+      throw new HttpException("Error getting ads",HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 }

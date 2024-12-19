@@ -10,7 +10,8 @@ export class AdvertisementController {
   async addAds(
     @Param('companyId') companyId: string,
     @Param('product') productName: string,
-    @Body() addDto:AddAdvertisementDto): Promise<any> {
+    @Body() addDto:AddAdvertisementDto) {
     return  await this.advertsiementService.addAdvertisementToProduct(companyId, productName, addDto);
   }
+
 }

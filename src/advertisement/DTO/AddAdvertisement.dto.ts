@@ -1,4 +1,3 @@
-export class AddAdvertisementDto{
-  readonly advertisement: string;
-
+export type AddAdvertisementDto={
+  advertisement: string;
 }

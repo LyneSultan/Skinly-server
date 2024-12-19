@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AdvertisementService } from './advertisement.service';
 import { AddAdvertisementDto } from './DTO/AddAdvertisement.dto';
 
@@ -14,4 +14,12 @@ export class AdvertisementController {
     return  await this.advertsiementService.addAdvertisementToProduct(companyId, productName, addDto);
   }
 
+
+  @Get('/:companyId/:product')
+  async getproductAds(
+    @Param('companyId') companyId: string,
+    @Param('product') productName: string,
+    @Body() addDto:AddAdvertisementDto) {
+    return  await this.advertsiementService.getAdvertisementForProduct(companyId, productName);
+  }
 }

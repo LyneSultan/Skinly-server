@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { paginateData } from 'pagination/pagination';
 import { Company, Product } from 'schema/company.schema';
 import { AddProductDto } from './DTO/addProduct.dto';
 
@@ -30,34 +29,26 @@ export class ProductService {
     }
   }
 
-  async getProductsFromCompany(comapnyId: string,page: number = 2, pageSize: number = 5):Promise<Product[]>{
+  async getProductsFromCompany(comapnyId: string,page: number = 3, pageSize: number = 5){
     try {
-      const company = await this.companyModel.findById(comapnyId);
-
-      if (!company) {
+      const skip = (page - 1) * pageSize;
+      const products = await this.companyModel.findById(comapnyId, { products: { $slice: [skip, pageSize] }, });
+      if (!products) {
         throw new HttpException("Company not found", HttpStatus.NOT_FOUND);
       }
-      const paginatedProducts = paginateData(company.products, page, pageSize);
-
-      return paginatedProducts;
+      return products;
     } catch (error) {
       throw new HttpException("Error getting products "+error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-  async getAllProducts(page: number = 1, pageSize: number = 5) : Promise<Product[]>{
+  async getAllProducts(page: number = 3, pageSize: number = 5) {
     try {
-      const companies = await this.companyModel.find().select('products');
+      const companyCount = await this.companyModel.countDocuments({});
+      const productsPerCompany = Math.floor(pageSize / companyCount);
 
-      const productsPerCompany = Math.floor(pageSize / companies.length);
-
-      const paginatedCompanies = [];
-
-      for (const company of companies) {
-        const paginatedProducts = paginateData(company.products, page, productsPerCompany);
-        paginatedCompanies.push( paginatedProducts);
-      }
-      return paginatedCompanies;
-
+      const skip = (page - 1) * pageSize;
+      const products = await this.companyModel.find({}, { products: { $slice: [skip, productsPerCompany] }, });
+      return products;
     } catch (error) {
       throw new HttpException('Error getting products with pagination'+error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

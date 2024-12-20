@@ -75,7 +75,7 @@ export class UsersService {
         userId,
         { ban: false },
         { new: true }
-      ).exec();
+      );
 
       if (!updatedUser) {
         throw new HttpException('User not found or update failed', HttpStatus.NOT_FOUND);

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { AddProductDto } from './DTO/addProduct.dto';
 import { ProductService } from './product.service';
 
@@ -7,13 +7,13 @@ export class ProductController {
   constructor(private readonly productService: ProductService) { }
 
   @Get('')
-  async getAllProducts() {
-    return this.productService.getAllProducts();
+  async getAllProducts(@Query('page') page: number= 3,@Query('pageSize') pageSize: number= 5) {
+    return this.productService.getAllProducts(page,pageSize);
   }
 
   @Get('/:id')
-  async getProductsCompany(@Param('id') companyId:string){
-    return this.productService.getProductsFromCompany(companyId);
+  async getProductsCompany(@Param('id') companyId:string,@Query('page') page: number= 3,@Query('pageSize') pageSize: number= 5){
+    return this.productService.getProductsFromCompany(companyId,page,pageSize);
   }
 
   @Get('common/:productName')

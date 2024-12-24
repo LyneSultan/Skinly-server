@@ -1,10 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
+import { User } from './user.schema';
 
-interface Product {
+export type Product ={
   name: string;
   price: number;
-  rating: number;
+  link: string;
+  rating?: number;
   description?: string;
   additional_info?: {
     advertisement: string;
@@ -13,14 +15,17 @@ interface Product {
 
 @Schema()
 export class Company extends Document {
-  @Prop()
+  @Prop({ required: true, unique:true })
   name: string;
 
-  @Prop()
+  @Prop({ required: true })
   scraping_file: string;
 
   @Prop({ type: Array, default:[] })
   products: Product[];
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
+  user:  User;
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);

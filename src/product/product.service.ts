@@ -62,13 +62,13 @@ export class ProductService {
         throw new HttpException('No companies found with this product', HttpStatus.NOT_FOUND);
       }
 
-      const commonProduct: { product: Product, companyName: string }[] = [];
+      const commonProduct: { product: Product, companyName: string ,company_logo:string}[] = [];
 
       companies.forEach(company => {
         const matchingProducts = company.products.filter(product => product.name === productName);
-
+        console.log(company.company_logo);
         matchingProducts.forEach(product => {
-          commonProduct.push({ companyName: company.name, product });
+          commonProduct.push({ companyName: company.name,company_logo:company.company_logo, product });
         });
       });
 

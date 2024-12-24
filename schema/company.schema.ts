@@ -21,6 +21,9 @@ export class Company extends Document {
   @Prop({ required: true })
   scraping_file: string;
 
+  @Prop({ required: true })
+  company_logo: string;
+
   @Prop({ type: Array, default:[] })
   products: Product[];
 

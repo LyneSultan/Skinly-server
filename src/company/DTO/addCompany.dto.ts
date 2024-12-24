@@ -1,5 +1,12 @@
-export type AddCompanyDto = {
-  readonly name: string;
-  readonly scraping_file: string;
-  readonly products?: string;
-}
+type addCompanyAsUser = {
+  name: string;
+  email: string;
+  password: string;
+};
+type addCompanyInCompanyCollection =  {
+  name: string;
+  scraping_file: string;
+  company_logo: string;
+  products?: string;
+};
+export type addCompany = addCompanyAsUser & addCompanyInCompanyCollection;

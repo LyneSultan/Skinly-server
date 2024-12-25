@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Company, Product } from 'schema/company.schema';
+import { compareTwoStrings } from 'string-similarity';
 import { AddProductDto } from './DTO/addProduct.dto';
 
 @Injectable()
@@ -53,29 +54,37 @@ export class ProductService {
       throw new HttpException('Error getting products with pagination'+error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
   async getCommonProduct(productName: string) {
     try {
-      const companies = await this.companyModel.find({'products.name': productName});
+      const companies = await this.companyModel.find();
 
-      if (!companies || companies.length === 0) {
-        throw new HttpException('No companies found with this product', HttpStatus.NOT_FOUND);
+      if (!companies) {
+        throw new HttpException('No companies found', HttpStatus.NOT_FOUND);
       }
 
-      const commonProduct: { product: Product, companyName: string ,company_logo:string}[] = [];
+      const commonProduct: { product: Product; companyName: string; company_logo: string }[] = [];
 
       companies.forEach(company => {
-        const matchingProducts = company.products.filter(product => product.name === productName);
-        console.log(company.company_logo);
+        const matchingProducts = company.products.filter(product =>
+          compareTwoStrings(product.name.toLowerCase(), productName.toLowerCase()) > 0.5
+        );
+
         matchingProducts.forEach(product => {
-          commonProduct.push({ companyName: company.name,company_logo:company.company_logo, product });
+          commonProduct.push({
+            companyName: company.name,
+            company_logo: company.company_logo,
+            product
+          });
         });
       });
 
-      return commonProduct;
+      if (commonProduct.length === 0) {
+        throw new HttpException('No products found matching the name', HttpStatus.NOT_FOUND);
+      }
 
+      return commonProduct;
     } catch (error) {
-      throw new HttpException('Error finding common products'+error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('Error finding common products: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

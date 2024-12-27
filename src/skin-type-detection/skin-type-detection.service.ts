@@ -1,25 +1,28 @@
 import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import * as FormData from 'form-data';
 
 @Injectable()
 export class SkinTypeDetectionService {
   constructor(private readonly httpService: HttpService) {}
 
-  getSkintype(image_path: string): Observable<any> {
-    if (!image_path) {
-      throw new HttpException("did not find the image", HttpStatus.NOT_FOUND);
+  async getSkinType(file: Express.Multer.File): Promise<any> {
+    if (!file) {
+      throw new HttpException('No file uploaded', HttpStatus.BAD_REQUEST);
     }
 
     const url = 'http://127.0.0.1:8000/api/skinType';
+    const formData = new FormData();
+    formData.append('image', file.buffer, file.originalname);
 
-    return this.httpService.post(url, { image_path }).pipe(
-      map(response => response.data),
-      catchError(error => {
-        console.error('Error:', error);
-        return throwError(() => new HttpException("Error getting skin type: " + error.message, HttpStatus.INTERNAL_SERVER_ERROR));
-      }),
-    );
+    try {
+      const response = await this.httpService.post(url, formData, {
+        headers: formData.getHeaders(),
+      }).toPromise();
+      return response.data;
+    } catch (error) {
+      console.error('Error:', error);
+      throw new HttpException('Error getting skin type: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

@@ -6,7 +6,7 @@ import * as FormData from 'form-data';
 export class SkinTypeDetectionService {
   constructor(private readonly httpService: HttpService) {}
 
-  async getSkinType(file: Express.Multer.File): Promise<any> {
+  async getSkinType(file: Express.Multer.File){
     if (!file) {
       throw new HttpException('No file uploaded', HttpStatus.BAD_REQUEST);
     }

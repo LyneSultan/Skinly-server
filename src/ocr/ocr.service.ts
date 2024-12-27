@@ -1,24 +1,28 @@
 import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { catchError, map, Observable, throwError } from 'rxjs';
+import * as FormData from 'form-data';
 
 @Injectable()
 export class OcrService {
- constructor(private readonly httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService) {}
 
-  performOcr(image_path: string): Observable<any> {
-    if (!image_path) {
-      throw new HttpException("did not find the image", HttpStatus.NOT_FOUND);
+  async performOcr(file: Express.Multer.File){
+    if (!file) {
+      throw new HttpException('No file uploaded', HttpStatus.BAD_REQUEST);
     }
 
-    const url = 'http://127.0.0.1:8000/api/pyOcr';
+    const url = 'http://127.0.0.1:8000/api/easyOcr';
+    const formData = new FormData();
+    formData.append('image', file.buffer, file.originalname);
 
-    return this.httpService.post(url, { image_path }).pipe(
-      map(response => response.data),
-      catchError(error => {
-        console.error('Error:', error);
-        return throwError(() => new HttpException("Error getting skin type: " + error.message, HttpStatus.INTERNAL_SERVER_ERROR));
-      }),
-    );
+    try {
+      const response = await this.httpService.post(url, formData, {
+        headers: formData.getHeaders(),
+      }).toPromise();
+      return response.data;
+    } catch (error) {
+      console.error('Error:', error);
+      throw new HttpException('Error' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

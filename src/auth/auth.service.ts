@@ -14,10 +14,10 @@ export class AuthService {
 
     const user = await this.userModel.findOne({ email: loginDto.email, });
     if (!user) {
-      throw new HttpException('Invalid credentials', HttpStatus.BAD_REQUEST);
+      throw new HttpException( { message: ['Invalid credentials'] }, HttpStatus.BAD_REQUEST);
     }
     if (user.password !== loginDto.password) {
-      throw new HttpException('Invalid credentials', HttpStatus.BAD_REQUEST);
+      throw new HttpException( { message: ['Invalid credentials'] }, HttpStatus.BAD_REQUEST);
 
     }
     const payload = { username: user.name, sub: user.id, role: user.user_type };

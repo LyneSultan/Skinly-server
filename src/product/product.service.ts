@@ -33,7 +33,7 @@ export class ProductService {
   async getProductsFromCompany(comapnyId: string,page: number = 3, pageSize: number = 5){
     try {
       const skip = (page - 1) * pageSize;
-      const products = await this.companyModel.findById(comapnyId, { products: { $slice: [skip, pageSize] }, });
+      const products = await this.companyModel.findOne({user:comapnyId}, { products: { $slice: [skip, pageSize] }, });
       if (!products) {
         throw new HttpException("Company not found", HttpStatus.NOT_FOUND);
       }

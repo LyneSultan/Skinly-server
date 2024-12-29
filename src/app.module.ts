@@ -1,23 +1,35 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { MulterModule } from '@nestjs/platform-express';
 import { AdminModule } from './admin/admin.module';
+import { AdvertisementModule } from './advertisement/advertisement.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-// import { AuthModule } from './auth/auth.module';
-import { AdvertisementModule } from './advertisement/advertisement.module';
+import { AuthModule } from './auth/auth.module';
 import { CompanyModule } from './company/company.module';
+import { OcrModule } from './ocr/ocr.module';
 import { ProductModule } from './product/product.module';
+import { SkinTypeDetectionModule } from './skin-type-detection/skin-type-detection.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/skinly'),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+
+    MulterModule.register({dest: './uploads', }),
+    // MongooseModule.forRoot('mongodb://localhost/skinly'),
+    MongooseModule.forRoot(process.env.DB_CONNECTION),
     UsersModule,
     AdminModule,
     CompanyModule,
     AdvertisementModule,
-    // AuthModule,
-    ProductModule
+    AuthModule,
+    ProductModule,
+    SkinTypeDetectionModule,
+    OcrModule,
   ],
   controllers: [AppController],
   providers: [AppService],

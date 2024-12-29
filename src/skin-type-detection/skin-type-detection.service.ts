@@ -11,7 +11,7 @@ export class SkinTypeDetectionService {
       throw new HttpException('No file uploaded', HttpStatus.BAD_REQUEST);
     }
 
-    const url = 'http://127.0.0.1:8000/api/skinType';
+    const url = process.env.DJANGO_API_SKIN_DETECTION;
     const formData = new FormData();
     formData.append('image', file.buffer, file.originalname);
 

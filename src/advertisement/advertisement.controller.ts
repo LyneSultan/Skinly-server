@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request, UseInterceptors } from '@nestjs/common';
+import { TokenInterceptor } from 'src/auth/services/token.service';
 import { AdvertisementService } from './advertisement.service';
 import { AddAdvertisementDto } from './DTO/AddAdvertisement.dto';
 
@@ -6,12 +7,14 @@ import { AddAdvertisementDto } from './DTO/AddAdvertisement.dto';
 export class AdvertisementController {
   constructor(private readonly advertsiementService: AdvertisementService) { }
 
-  @Post('/:companyId/:product')
+  @Post('/:product')
+  @UseInterceptors(TokenInterceptor)
   async addAds(
-    @Param('companyId') companyId: string,
+    @Request()req,
     @Param('product') productName: string,
-    @Body() addDto:AddAdvertisementDto) {
-    return  await this.advertsiementService.addAdvertisementToProduct(companyId, productName, addDto);
+    @Body() addDto: AddAdvertisementDto) {
+
+    return  await this.advertsiementService.addAdvertisementToProduct(req.user.sub, productName, addDto);
   }
 
 

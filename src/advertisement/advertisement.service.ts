@@ -11,10 +11,10 @@ export class AdvertisementService {
   async addAdvertisementToProduct(
     companyId: string,
     productName: string,
-    addAdvertisementDto: AddAdvertisementDto): Promise<Product> {
+    addAdvertisementDto: AddAdvertisementDto) {
 
     try {
-      const company = await this.companyModel.findById(companyId);
+      const company = await this.companyModel.findOne({user:companyId});
 
       if (!company) {
         throw new HttpException("Company not found", HttpStatus.NOT_FOUND);
@@ -35,6 +35,9 @@ export class AdvertisementService {
       return product;
 
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new HttpException("Error in adding ads", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

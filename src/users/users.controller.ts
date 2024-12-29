@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import { User } from 'schema/user.schema';
+import { Body, Controller, Get, Headers, HttpException, Param, Patch, Post } from '@nestjs/common';
+import { HttpStatusCode } from 'axios';
+import * as jwt from 'jsonwebtoken';
 import { LoginDto } from './DTO/userLogin.dto';
 import { CreateUserDto } from './DTO/userRegister.dto';
 import { UsersService } from './users.service';
@@ -21,9 +22,21 @@ export class UsersController {
     return this.userService.unban(userId);
   }
 
-  @Patch(':id')
-  async updateUser(@Param('id') id: string, @Body() updateData: Partial<User>) {
-    return this.userService.updateUser(id, updateData);
+  @Patch()
+  async updateUser(@Headers('Authorization') token: string, @Body() updateData: Partial<any>) {
+
+    if (!token) {
+      throw new HttpException('No token provided',HttpStatusCode.BadRequest);
+    }
+
+    try {
+      const decoded = jwt.verify(token, "your_secret_key") as jwt.JwtPayload;
+      const userId = decoded.sub;
+      return this.userService.updateUser(userId, updateData);
+    } catch (error) {
+      throw new HttpException('No token expired',HttpStatusCode.BadRequest);
+    }
+    
   }
 
   @Post('register')

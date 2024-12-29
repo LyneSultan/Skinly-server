@@ -1,4 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseInterceptors } from '@nestjs/common';
+import { Company } from 'schema/company.schema';
+import { TokenInterceptor } from 'src/auth/services/token.service';
 import { CompanyService } from './company.service';
 import { addCompany } from './DTO/addCompany.dto';
 
@@ -19,6 +21,13 @@ export class CompanyController {
  @Delete('/:id')
   async removeCompany(@Param('id')companyId:String){
     return this.companyService.removeCompany(companyId);
+  }
+
+  @Patch()
+  @UseInterceptors(TokenInterceptor)
+  async updateUser(@Request() req,@Body() updateData: Partial<Company>) {
+      const companyId = req.user.sub;
+      return this.companyService.updateCompany(companyId, updateData);
   }
 
 }

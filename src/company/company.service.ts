@@ -63,6 +63,25 @@ export class CompanyService {
     }
   }
 
+  async updateCompany(companyId: number, updateData: Partial<Company>) {
+    try {
+      console.log(companyId, "comp");
+      const updatedCompany = await this.companyModel.findOneAndUpdate(
+        {user:companyId},
+        updateData,
+        {
+          new: true,
+        }
+      );
 
+      if (!updatedCompany) {
+        throw new HttpException('User not found or update failed', HttpStatus.NOT_FOUND);
+      }
+
+      return  updatedCompany;
+    } catch (error) {
+      throw new HttpException(error.message || 'Failed to update the user', HttpStatus.BAD_REQUEST);
+    }
+  }
 
 }

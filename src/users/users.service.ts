@@ -41,10 +41,12 @@ export class UsersService {
     }
   }
 
-  async getUsers(): Promise<User[]> {
+  async getUsers(): Promise<{ users: User[]; count: number }> {
     try {
-      const users = await this.userModel.find();
-      return users;
+      const users = await this.userModel.find({ user_type: 'user' });
+      const count = users.length;
+
+      return { users, count };
     } catch (error) {
       throw new HttpException('Failed to retrieve users', HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CompanyService } from './company.service';
-import { AddCompanyDto } from './DTO/addCompany.dto';
+import { addCompany } from './DTO/addCompany.dto';
 
 @Controller('company')
 export class CompanyController {
@@ -12,7 +12,7 @@ export class CompanyController {
   }
 
   @Post('/')
-  async addCompany(@Body() addCompanyDto: AddCompanyDto) {
+  async addCompany(@Body() addCompanyDto: addCompany) {
     return this.companyService.addCompany(addCompanyDto);
   }
 

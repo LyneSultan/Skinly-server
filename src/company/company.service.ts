@@ -13,25 +13,23 @@ export class CompanyService {
 
   async addCompany(dto: addCompany){
     try {
-      // const newUser = new this.userModel({
-      //   name: dto.name,
-      //   email: dto.email,
-      //   password: dto.password,
-      //   user_type: 'company',
-      // });
-      // await newUser.save();
+      const newUser = new this.userModel({
+        name: dto.name,
+        email: dto.email,
+        password: "dto.password",
+        user_type: 'company',
+      });
+      await newUser.save();
 
       const newCompany = new this.companyModel({
         name: dto.name,
         scraping_file: dto.scraping_file,
         company_logo: dto.company_logo,
-        // user:newUser._id
+        user:newUser._id
       });
       await newCompany.save();
 
-       return newCompany;
-
-      // return newUser;
+      return newCompany;
 
     } catch (error) {
       throw new HttpException("Error in adding the company, ensure all required fields", HttpStatus.BAD_REQUEST);

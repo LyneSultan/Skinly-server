@@ -1,7 +1,6 @@
 type addCompanyAsUser = {
   name: string;
   email: string;
-  password: string;
 };
 type addCompanyInCompanyCollection =  {
   name: string;

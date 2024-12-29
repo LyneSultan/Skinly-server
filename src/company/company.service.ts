@@ -38,7 +38,13 @@ export class CompanyService {
 
   async removeCompany(companyId: String): Promise<any> {
     try {
-      const companyToDelete = await this.companyModel.findByIdAndDelete(companyId);
+      const companyToDelete = await this.companyModel.findById(companyId);
+      if (!companyToDelete) {
+        throw new HttpException('Company not found', HttpStatus.NOT_FOUND);
+      }
+      await this.companyModel.findByIdAndDelete(companyId);
+      await this.userModel.findByIdAndDelete(companyToDelete.user);
+
       return {
         message: 'Company deleted successfully',
       };
@@ -56,4 +62,7 @@ export class CompanyService {
       throw new HttpException("Could not get companies", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+
+
 }

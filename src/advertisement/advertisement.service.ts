@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Company, Product } from 'schema/company.schema';
-import { AddAdvertisementDto } from './DTO/AddAdvertisement.dto';
 
 @Injectable()
 export class AdvertisementService {
@@ -11,7 +10,7 @@ export class AdvertisementService {
   async addAdvertisementToProduct(
     companyId: string,
     productName: string,
-    addAdvertisementDto: AddAdvertisementDto) {
+    advertisement: string) {
 
     try {
       const company = await this.companyModel.findOne({user:companyId});
@@ -28,7 +27,7 @@ export class AdvertisementService {
       if (!product.additional_info) {
         product.additional_info = { advertisement: '' };
       }
-      product.additional_info.advertisement = addAdvertisementDto.advertisement;
+      product.additional_info.advertisement = advertisement;
       company.markModified('products');
 
       await company.save();

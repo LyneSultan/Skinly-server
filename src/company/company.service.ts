@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import * as crypto from 'crypto'; // For secure random password generation
 import { Model } from 'mongoose';
 import { Company } from 'schema/company.schema';
 import { User } from 'schema/user.schema';
@@ -13,10 +14,12 @@ export class CompanyService {
 
   async addCompany(dto: addCompany){
     try {
+      const randomPassword = crypto.randomBytes(8).toString('hex');
+
       const newUser = new this.userModel({
         name: dto.name,
         email: dto.email,
-        password: "dto.password",
+        password: randomPassword,
         user_type: 'company',
       });
       await newUser.save();
@@ -29,14 +32,16 @@ export class CompanyService {
       });
       await newCompany.save();
 
+
       return newCompany;
 
     } catch (error) {
-      throw new HttpException("Error in adding the company, ensure all required fields", HttpStatus.BAD_REQUEST);
-    }
+
+      throw new HttpException('Failed to ', HttpStatus.INTERNAL_SERVER_ERROR);
+  }
   }
 
-  async removeCompany(companyId: String): Promise<any> {
+  async removeCompany(companyId: String) {
     try {
       const companyToDelete = await this.companyModel.findById(companyId);
       if (!companyToDelete) {

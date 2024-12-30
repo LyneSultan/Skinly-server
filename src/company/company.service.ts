@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import axios from 'axios';
 import * as crypto from 'crypto'; // For secure random password generation
 import { Model } from 'mongoose';
 import { Company } from 'schema/company.schema';
@@ -32,6 +33,11 @@ export class CompanyService {
       });
       await newCompany.save();
 
+      const mailjetResponse = await this.sendEmailWithPassword(dto.name,dto.email, randomPassword);
+
+      if (mailjetResponse.status !== 200) {
+        throw new HttpException('Failed to send email to the company', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
 
       return newCompany;
 
@@ -39,6 +45,42 @@ export class CompanyService {
 
       throw new HttpException('Failed to ', HttpStatus.INTERNAL_SERVER_ERROR);
   }
+  }
+
+  async sendEmailWithPassword(name:string,toEmail: string, password: string) {
+    try {
+      const emailBody = {
+        "Messages": [
+          {
+            "From": {
+              "Email": "lynesultane@gmail.com",
+              "Name": "Skinly",
+            },
+            "To": [
+              {
+                "Email": toEmail,
+                "Name": name,
+              },
+            ],
+            "Subject": "Your New Company Account Details",
+            "TextPart": `Hello,\n\nYour account has been created. Your login password is: ${password}`,
+            "HTMLPart": `<h3>Hello,</h3><p>Your account has been created. Your login password is: <strong>${password}</strong></p>`
+          }
+        ]
+      };
+
+      const response = await axios.post('https://api.mailjet.com/v3.1/send', emailBody, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${Buffer.from(`${process.env.API_KEY_EMAIl}:${process.env.KEY}`).toString('base64')}`,
+        },
+      });
+
+      return response;
+    } catch (error) {
+      console.error("Error sending email with Mailjet:", error);
+      throw new HttpException('Failed to send email with Mailjet', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async removeCompany(companyId: String) {

@@ -61,28 +61,44 @@ export class ProductService {
       if (!companies) {
         throw new HttpException('No companies found', HttpStatus.NOT_FOUND);
       }
-
-      const commonProduct: { product: Product; companyName: string; company_logo: string }[] = [];
+      type productInfo={ product: Product; companyName: string; company_logo: string; similarity: number }
+      const bestMatches: productInfo [] = [];
+      const similarProducts: productInfo[] = [];
+      const lowerCaseProductName = productName.toLowerCase();
 
       companies.forEach(company => {
-        const matchingProducts = company.products.filter(product =>
-          compareTwoStrings(product.name.toLowerCase(), productName.toLowerCase()) > 0.5
-        );
+        let bestMatchForCompany: productInfo | null = null;
 
-        matchingProducts.forEach(product => {
-          commonProduct.push({
-            companyName: company.name,
-            company_logo: company.company_logo,
-            product
-          });
+        company.products.forEach(product => {
+          const similarity = compareTwoStrings(product.name.toLowerCase(), lowerCaseProductName);
+          if (similarity > 0.5) {
+            if (!bestMatchForCompany || similarity > bestMatchForCompany.similarity) {
+              bestMatchForCompany = {
+                companyName: company.name,
+                company_logo: company.company_logo,
+                product,
+                similarity
+              };
+            } else {
+              similarProducts.push({
+                companyName: company.name,
+                company_logo: company.company_logo,
+                product,
+                similarity
+              });
+            }
+          }
         });
+        if (bestMatchForCompany) {
+          bestMatches.push(bestMatchForCompany);
+        }
       });
 
-      if (commonProduct.length === 0) {
+      if (bestMatches.length === 0) {
         throw new HttpException('No products found matching the name', HttpStatus.NOT_FOUND);
       }
 
-      return commonProduct;
+      return { bestMatches, similarProducts:similarProducts };
     } catch (error) {
       throw new HttpException('Error finding common products: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

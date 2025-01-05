@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Headers, HttpException, Param, Patch } from '@nestjs/common';
-import { HttpStatusCode } from 'axios';
-import * as jwt from 'jsonwebtoken';
+import { Body, Controller, Get, Param, Patch, Request, UseInterceptors } from '@nestjs/common';
+import { TokenInterceptor } from 'src/auth/services/token.service';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -21,20 +20,8 @@ export class UsersController {
   }
 
   @Patch()
-  async updateUser(@Headers('Authorization') token: string, @Body() updateData: Partial<any>) {
-
-    if (!token) {
-      throw new HttpException('No token provided',HttpStatusCode.BadRequest);
-    }
-
-    try {
-      const decoded = jwt.verify(token, "your_secret_key") as jwt.JwtPayload;
-      const userId = decoded.sub;
-      return this.userService.updateUser(userId, updateData);
-    } catch (error) {
-      throw new HttpException('No token expired',HttpStatusCode.BadRequest);
-    }
-
+  @UseInterceptors(TokenInterceptor)
+  async updateUser(@Request() request , @Body() updateData: Partial<any>) {
+      return this.userService.updateUser(request.user.sub, updateData);
   }
-
 }

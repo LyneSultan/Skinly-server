@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MulterModule } from '@nestjs/platform-express';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { AdminModule } from './admin/admin.module';
 import { AdvertisementModule } from './advertisement/advertisement.module';
 import { AppController } from './app.controller';
@@ -18,9 +20,12 @@ import { UsersModule } from './users/users.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
 
     MulterModule.register({dest: './uploads', }),
-    // MongooseModule.forRoot('mongodb://localhost/skinly'),
     MongooseModule.forRoot(process.env.DB_CONNECTION),
     UsersModule,
     AdminModule,

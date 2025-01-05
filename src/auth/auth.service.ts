@@ -3,8 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'schema/user.schema';
-import { LoginDto } from 'src/users/DTO/userLogin.dto';
-import { CreateUserDto } from 'src/users/DTO/userRegister.dto';
+import { LoginDto } from 'src/auth/dto/userLogin.dto';
+import { CreateUserDto } from 'src/auth/dto/userRegister.dto';
 
 @Injectable()
 export class AuthService {
@@ -57,5 +57,41 @@ export class AuthService {
         throw error;
       }
       throw new HttpException({ message: ['An unexpected error occurred']},HttpStatus.INTERNAL_SERVER_ERROR,);}
+  }
+
+  private generate4DigitCode(): string {
+    return Math.floor(1000 + Math.random() * 9000).toString();
+  }
+
+  async sendVerificationCode(email: string){
+    const user = await this.userModel.findOne({ email: email, });
+
+    if (!user) {
+      throw new HttpException('Email not found in the database', HttpStatus.NOT_FOUND);
+    }
+
+    const verificationCode = this.generate4DigitCode();
+
+    await this.sendEmailWithPassword(user.name, user.email, verificationCode);
+
+    return verificationCode;
+  }
+
+
+  async resetpassword(email: string,password:string){
+    const user = await this.userModel.findOne({ email: email, });
+
+    if (!user) {
+      throw new HttpException('Email not found in the database', HttpStatus.NOT_FOUND);
+    }
+
+    user.password = password;
+    await user.save();
+    const payload = { username: user.name, sub: user.id, role: user.user_type };
+    return {
+      user,
+      access_token: this.jwtService.sign(payload),
+    };
+
   }
 }

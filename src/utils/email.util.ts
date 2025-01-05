@@ -1,11 +1,8 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import axios from 'axios';
 
-export async function sendEmailWithPassword(
-  name: string,
-  toEmail: string,
-  code: string,
-) {
+export const sendEmailWithPassword = async (name: string, toEmail: string,subject:string,htmlPart:string) =>
+{
   const emailBody = {
     Messages: [
       {
@@ -19,8 +16,8 @@ export async function sendEmailWithPassword(
             Name: name,
           },
         ],
-        Subject: 'Your Verification Code',
-        HTMLPart: `<h3>Hello ${name},</h3><p>Your verification code is: <strong>${code}</strong></p>`,
+        Subject: `${subject}`,
+        HTMLPart: `${htmlPart}`,
       },
     ],
   };

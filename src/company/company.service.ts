@@ -32,8 +32,10 @@ export class CompanyService {
         user:newUser._id
       });
       await newCompany.save();
+      const subject = "Your New Company Account Details";
+      const emailContent=`<h3>Hello,</h3><p>Your account has been created. Your login password is: <strong>${newUser.password}</strong></p>`
 
-      await sendEmailWithPassword(dto.name,dto.email, randomPassword);
+      await sendEmailWithPassword(dto.name,dto.email,subject,emailContent);
 
       return newUser;
 
@@ -90,3 +92,4 @@ export class CompanyService {
   }
 
 }
+

@@ -1,8 +1,6 @@
-import { Body, Controller, Get, Headers, HttpException, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Headers, HttpException, Param, Patch } from '@nestjs/common';
 import { HttpStatusCode } from 'axios';
 import * as jwt from 'jsonwebtoken';
-import { LoginDto } from './DTO/userLogin.dto';
-import { CreateUserDto } from './DTO/userRegister.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -36,17 +34,7 @@ export class UsersController {
     } catch (error) {
       throw new HttpException('No token expired',HttpStatusCode.BadRequest);
     }
-    
-  }
 
-  @Post('register')
-  async register(@Body() createUserDto: CreateUserDto){
-    return this.userService.createUser(createUserDto);
-  }
-
-  @Post('login')
-  async login(@Body() loginDto: LoginDto) {
-    return this.userService.login(loginDto);
   }
 
 }

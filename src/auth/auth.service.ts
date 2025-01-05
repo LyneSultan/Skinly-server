@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { User } from 'schema/user.schema';
 import { LoginDto } from 'src/auth/dto/userLogin.dto';
 import { CreateUserDto } from 'src/auth/dto/userRegister.dto';
+import { sendEmailWithPassword } from 'src/utils/email.util';
 
 @Injectable()
 export class AuthService {
@@ -56,25 +57,7 @@ export class AuthService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException({ message: ['An unexpected error occurred']},HttpStatus.INTERNAL_SERVER_ERROR,);}
-  }
-
-  private generate4DigitCode(): string {
-    return Math.floor(1000 + Math.random() * 9000).toString();
-  }
-
-  async sendVerificationCode(email: string){
-    const user = await this.userModel.findOne({ email: email, });
-
-    if (!user) {
-      throw new HttpException('Email not found in the database', HttpStatus.NOT_FOUND);
-    }
-
-    const verificationCode = this.generate4DigitCode();
-
-    await this.sendEmailWithPassword(user.name, user.email, verificationCode);
-
-    return verificationCode;
+      throw new HttpException({ message: ['An unexpected error occurred'+error]},HttpStatus.INTERNAL_SERVER_ERROR,);}
   }
 
 
@@ -94,4 +77,18 @@ export class AuthService {
     };
 
   }
+  async sendVerificationCode(email: string){
+    const user = await this.userModel.findOne({ email: email });
+
+    if (!user) {
+      throw new HttpException('Email not found in the database', HttpStatus.NOT_FOUND);
+    }
+
+    const verificationCode =  Math.floor(1000 + Math.random() * 9000).toString();
+
+    await sendEmailWithPassword(user.name, user.email, verificationCode);
+
+    return verificationCode;
+  }
+
 }

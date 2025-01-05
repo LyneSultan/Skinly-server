@@ -84,9 +84,12 @@ export class AuthService {
       throw new HttpException('Email not found in the database', HttpStatus.NOT_FOUND);
     }
 
-    const verificationCode =  Math.floor(1000 + Math.random() * 9000).toString();
+    const verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
 
-    await sendEmailWithPassword(user.name, user.email, verificationCode);
+    const subject = "Verification code";
+    const emailContent=`<h3>Hello,</h3><p>Your account has been created. Your login password is: <strong>${verificationCode}</strong></p>`
+
+    await sendEmailWithPassword(user.name, user.email, subject,emailContent);
 
     return verificationCode;
   }

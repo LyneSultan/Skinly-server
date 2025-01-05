@@ -5,22 +5,22 @@ import { Document, } from "mongoose";
 @Schema()
 export class User extends Document{
   @Prop({ required: true })
-  name: String;
+  name: string;
 
   @Prop({ required: true })
-  password: String;
+  password: string;
 
   @Prop({ required: true , unique:true})
-  email: String;
+  email: string;
 
   @Prop({default:"user",enum:["user","admin","company"]})
-  user_type: String;
+  user_type: string;
 
   @Prop({enum:["oily","normal","dry"]})
-  skin_type: String;
+  skin_type: string;
 
   @Prop()
-  profile_pircture: String;
+  profile_pircture: string;
 
   @Prop({default: false})
   ban: Boolean;

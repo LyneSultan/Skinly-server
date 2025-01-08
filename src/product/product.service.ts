@@ -64,12 +64,16 @@ export class ProductService {
       type productInfo={ product: Product; companyName: string; company_logo: string; similarity: number }
       const bestMatches: productInfo [] = [];
       const similarProducts: productInfo[] = [];
-      const lowerCaseProductName = productName.toLowerCase();
 
+      const lowerCaseProductName = productName.toLowerCase();
       companies.forEach(company => {
         let bestMatchForCompany: productInfo | null = null;
 
         company.products.forEach(product => {
+          if (!product.name || !product.image || product.image === "") {
+            return;
+          }
+
           const similarity = compareTwoStrings(product.name.toLowerCase(), lowerCaseProductName);
           if (similarity > 0.5) {
             if (!bestMatchForCompany || similarity > bestMatchForCompany.similarity) {

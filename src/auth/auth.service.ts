@@ -22,6 +22,10 @@ export class AuthService {
         throw new HttpException( { message: ['Invalid credentials'] }, HttpStatus.BAD_REQUEST);
 
       }
+      if (user.ban) {
+        throw new HttpException( { message: ['banned'] }, HttpStatus.FORBIDDEN);
+
+      }
       const payload = { username: user.name, sub: user.id, role: user.user_type };
       return {
         user,

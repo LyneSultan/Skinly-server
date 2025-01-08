@@ -5,6 +5,7 @@ import { User } from './user.schema';
 export type Product ={
   name: string;
   price: number;
+  image: string;
   link: string;
   rating?: number;
   description?: string;
@@ -27,7 +28,7 @@ export class Company extends Document {
   @Prop({ type: Array, default:[] })
   products: Product[];
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   user:  User;
 }
 

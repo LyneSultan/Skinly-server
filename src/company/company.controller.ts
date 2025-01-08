@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Company } from 'schema/company.schema';
+import { AdminGuard } from 'src/auth/admin.guard';
 import { TokenInterceptor } from 'src/auth/services/token.service';
 import { CompanyService } from './company.service';
 import { addCompany } from './DTO/addCompany.dto';
@@ -14,11 +15,13 @@ export class CompanyController {
   }
 
   @Post('/')
+  @UseGuards(AdminGuard)
   async addCompany(@Body() addCompanyDto: addCompany) {
     return this.companyService.addCompany(addCompanyDto);
   }
 
- @Delete('/:id')
+  @Delete('/:id')
+  @UseGuards(AdminGuard)
   async removeCompany(@Param('id')companyId:String){
     return this.companyService.removeCompany(companyId);
   }
@@ -29,5 +32,4 @@ export class CompanyController {
       const companyId = req.user.sub;
       return this.companyService.updateCompany(companyId, updateData);
   }
-
 }

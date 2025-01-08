@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Patch, Request, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Request, UseGuards, UseInterceptors } from '@nestjs/common';
+import { AdminGuard } from 'src/auth/admin.guard';
 import { TokenInterceptor } from 'src/auth/services/token.service';
 import { UsersService } from './users.service';
 
@@ -10,7 +11,9 @@ export class UsersController {
   async getUsers(){
     return this.userService.getUsers();
   }
+
   @Get('ban/:id')
+  @UseGuards(AdminGuard)
   async banUser(@Param('id') userId: string) {
     return this.userService.ban(userId);
   }
@@ -18,7 +21,6 @@ export class UsersController {
   async unbanUser(@Param('id') userId: string) {
     return this.userService.unban(userId);
   }
-
   @Patch()
   @UseInterceptors(TokenInterceptor)
   async updateUser(@Request() request , @Body() updateData: Partial<any>) {

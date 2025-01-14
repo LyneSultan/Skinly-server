@@ -1,4 +1,10 @@
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -20,7 +26,9 @@ export class AdminGuard implements CanActivate {
       request.user = decoded;
 
       if (!decoded.role || decoded.role !== 'admin') {
-        throw new ForbiddenException('You do not have the required permissions');
+        throw new ForbiddenException(
+          'You do not have the required permissions'
+        );
       }
 
       return true;

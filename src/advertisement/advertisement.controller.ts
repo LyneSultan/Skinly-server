@@ -21,9 +21,7 @@ export class AdvertisementController {
       }),
     })
   )
-  async addAds(
-    @Request() req,
-    @Param('product') productName: string  ) {
+  async addAds(@Request() req,@Param('product') productName: string  ) {
 
     return await this.advertsiementService.addAdvertisementToProduct(
       req.user.sub,

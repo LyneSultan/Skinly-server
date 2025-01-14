@@ -1,3 +1,3 @@
 export type AddAdvertisementDto={
-  advertisement: string;
+  readonly advertisement: string;
 }

@@ -11,13 +11,12 @@ import { AuthService } from './auth.service';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    ConfigModule.forRoot({ isGlobal: true }),
+
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     PassportModule,
     JwtModule.register({
-      secret:process.env.JWT_SECRET_KEY,
+      secret: process.env.JWT_SECRET_KEY,
       signOptions: { expiresIn: '1h' },
     }),
   ],

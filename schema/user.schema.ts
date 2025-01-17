@@ -10,7 +10,7 @@ export class User extends Document{
   @Prop({ required: true })
   password: string;
 
-  @Prop({ required: true , unique:true})
+  @Prop({ required: true , unique:true, match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/})
   email: string;
 
   @Prop({default:"user",enum:["user","admin","company"]})
@@ -24,8 +24,6 @@ export class User extends Document{
 
   @Prop({default: false})
   ban: Boolean;
-
-
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

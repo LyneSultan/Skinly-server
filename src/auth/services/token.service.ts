@@ -10,15 +10,16 @@ export class TokenInterceptor implements NestInterceptor {
 
     if (token) {
       try {
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
         request.user = decoded;
+
       } catch (error) {
         throw new HttpException('Token expired or invalid', HttpStatus.BAD_REQUEST);
       }
     } else {
       throw new HttpException('No token provided', HttpStatus.BAD_REQUEST);
     }
-
     return next.handle();
   }
 }

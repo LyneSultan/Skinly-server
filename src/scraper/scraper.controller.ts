@@ -13,7 +13,7 @@ import { ScraperService } from './scraper.service';
 export class ScraperController {
   constructor(private readonly scraperService: ScraperService) {}
 
-  @Post('upload')
+  @Post('')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: multer.memoryStorage(),

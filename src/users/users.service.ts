@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../../schema/user.schema';
@@ -75,4 +75,17 @@ export class UsersService {
       throw new HttpException(error.message || 'Failed to update the user', HttpStatus.BAD_REQUEST);
     }
   }
+
+  async changeProfile(profileData: { userId: string; imagePath: string }) {
+    const user = await this.userModel.findById(profileData.userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    user.profile_pircture = profileData.imagePath;
+    user.save();
+    return  profileData.imagePath;
+  }
+
 }

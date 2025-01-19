@@ -1,7 +1,10 @@
+/scripts
+/extractedData.json
 # compiled output
 /dist
 /node_modules
 /build
+/uploads
 
 # Logs
 logs

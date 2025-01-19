@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as MongooseSchema from 'mongoose';
 import { Document } from 'mongoose';
-import { User } from './user.schema'; // Assuming you have a User schema
+import { User } from './user.schema';
 
 @Schema()
 export class AiLogs extends Document {

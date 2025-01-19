@@ -1,13 +1,18 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   Param,
   Patch,
+  Post,
   Request,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 import { AdminGuard } from 'src/auth/admin.guard';
 import { TokenInterceptor } from 'src/auth/services/token.service';
 import { UsersService } from './users.service';
@@ -37,4 +42,31 @@ export class UsersController {
   async updateUser(@Request() request, @Body() updateData: Partial<any>) {
     return this.userService.updateUser(request.user.sub, updateData);
   }
+
+  @Post('/profile')
+  @UseInterceptors(
+    TokenInterceptor,
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, callback) => {
+          const uniqueName = `${Date.now()}-${file.originalname}`;
+          callback(null, uniqueName);
+        },
+      }),
+    })
+  )
+  async changeProfile(@Request() req, @UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    const profileData = {
+      userId: req.user.sub,
+      imagePath: file.path,
+    }
+
+    return await this.userService.changeProfile(profileData);
+  }
+
 }

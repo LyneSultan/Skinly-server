@@ -5,7 +5,8 @@
 /node_modules
 /build
 /uploads
-
+/scraping
+test.js
 # Logs
 logs
 *.log
